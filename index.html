@@ -4,235 +4,491 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI-Powered Health Assistant Website</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
+
 :root {
   --primary: #00ff00;
   --dark-bg: #0f0f0f;
   --glow-green: #00ff00;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--dark-bg);
-  color: white;
-  overflow-x: hidden;
-  min-height: 100vh;
-  padding: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  position: relative;
+  --risk-low: #00cc00;
+  --risk-moderate: #ffcc00;
+  --risk-high: #ff3333;
 }
 
-.container { width: 100%; max-width: 850px; z-index: 2; position: relative; }
-
-.card {
-  background: #111;
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 0 30px rgba(0,255,0,0.5);
-  position: relative;
-  z-index: 2;
-  animation: floatCard 2s ease-in-out infinite alternate;
-}
-@keyframes floatCard { 0%{ transform: translateY(0px);} 100%{ transform: translateY(-10px);} }
-
-h1 { margin-top: 0; color: var(--glow-green); text-align: center; }
-label { display: block; margin-top: 15px; font-weight: 500; color: #ccc; }
-
-textarea,input,select {
-  width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #333;
-  margin-top: 5px; background: #111; color: white; transition: all 0.3s;
-}
-textarea:focus,input:focus,select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(0,255,0,0.5);
-  outline: none;
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
 }
 
-button {
-  width: 100%; margin-top: 20px; padding: 14px; border: none; border-radius: 14px;
-  background: var(--primary); color: black; font-weight: 600; cursor: pointer;
-  transition: all 0.3s;
+body{
+font-family:'Inter',sans-serif;
+background:var(--dark-bg);
+color:white;
+overflow-x:hidden;
+overflow-y:auto;
+min-height:100vh;
+padding:30px;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+position:relative;
 }
-button:hover { background: #00cc00; color: white; }
 
-.dashboard { margin-top: 25px; display: none; animation: fadeIn 1s ease forwards; }
-@keyframes fadeIn { from{opacity:0; transform: translateY(10px);} to{opacity:1; transform: translateY(0);} }
-
-.chat-container { display:flex; align-items:flex-start; margin-bottom:15px; gap:15px; }
-
-/* Medium hospital cross inside glowing circle avatar with switched colors */
-.result-avatar {
-  width: 60px; 
-  height: 60px; 
-  background: black; /* circle is dark */
-  border-radius: 50%; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 0 20px var(--glow-green), 0 0 40px var(--glow-green); 
-  flex-shrink: 0;
-  animation: pulse 2s infinite;
-  position: relative;
+.container{
+width:100%;
+max-width:850px;
+z-index:2;
+position:relative;
 }
-.result-avatar::after {
-  content: "";
-  width: 35px; 
-  height: 35px;
-  background: var(--glow-green); /* cross is glowing green */
-  clip-path: polygon(
-    35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%, 
-    65% 65%, 65% 100%, 35% 100%, 35% 65%, 0% 65%, 0% 35%, 35% 35%
-  );
-  position: absolute;
+
+.card{
+background:#111;
+border-radius:20px;
+padding:30px;
+box-shadow:0 0 30px rgba(0,255,0,0.5);
+position:relative;
+z-index:2;
+animation:floatCard 2s ease-in-out infinite alternate;
 }
-@keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
 
-.chat-bubble {
-  background: #111; padding: 15px; border-radius: 15px; max-width: 80%;
-  box-shadow: 0 0 15px var(--glow-green); color: white;
-  animation: fadeInBubble 0.8s ease forwards; display: flex; flex-direction: column; gap: 8px;
+@keyframes floatCard{
+0%{transform:translateY(0px);}
+100%{transform:translateY(-10px);}
 }
-@keyframes fadeInBubble { from{opacity:0; transform:translateX(-10px);} to{opacity:1; transform:translateX(0);} }
 
-.disclaimer { font-size: 12px; margin-top: 20px; color: #888; text-align: center; }
-.find-hospital-btn { background: var(--glow-green); color: black; padding: 12px 20px; border: none; border-radius: 12px; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
-.find-hospital-btn:hover { background: #00cc00; color: white; }
-
-/* CSS-only falling hospital crosses */
-#crossContainer { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
-.cross {
-  position: absolute;
-  width: 40px; height: 40px;
-  background: var(--glow-green);
-  clip-path: polygon(
-    35% 0%, 65% 0%, 65% 35%, 100% 35%, 100% 65%, 
-    65% 65%, 65% 100%, 35% 100%, 35% 65%, 0% 65%, 0% 35%, 35% 35%
-  );
-  opacity: 0.8; border-radius: 4px;
-  animation: fall linear infinite;
+h1{
+margin-top:0;
+color:var(--glow-green);
+text-align:center;
 }
-.cross:nth-child(odd){ width:50px; height:50px; }
-.cross:nth-child(even){ width:30px; height:30px; }
-.cross:nth-child(1){ animation-duration:6s; animation-delay:0s; left:5vw; }
-.cross:nth-child(2){ animation-duration:7s; animation-delay:1s; left:15vw; }
-.cross:nth-child(3){ animation-duration:5s; animation-delay:2s; left:25vw; }
-.cross:nth-child(4){ animation-duration:6.5s; animation-delay:1.5s; left:40vw; }
-.cross:nth-child(5){ animation-duration:5.5s; animation-delay:0.5s; left:60vw; }
-.cross:nth-child(6){ animation-duration:7s; animation-delay:2.5s; left:75vw; }
-.cross:nth-child(7){ animation-duration:6s; animation-delay:1s; left:85vw; }
 
-@keyframes fall { 0% { transform: translateY(-50px);} 100% { transform: translateY(110vh);} }
+label{
+display:block;
+margin-top:15px;
+font-weight:500;
+color:#ccc;
+}
+
+textarea,input,select{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #333;
+margin-top:5px;
+background:#111;
+color:white;
+transition:all .3s;
+}
+
+textarea:focus,input:focus,select:focus{
+border-color:var(--primary);
+box-shadow:0 0 10px rgba(0,255,0,0.5);
+outline:none;
+}
+
+button{
+width:100%;
+margin-top:20px;
+padding:14px;
+border:none;
+border-radius:14px;
+background:var(--primary);
+color:black;
+font-weight:600;
+cursor:pointer;
+transition:all .3s;
+}
+
+button:hover{
+background:#00cc00;
+color:white;
+}
+
+.dashboard{
+margin-top:25px;
+display:none;
+animation:fadeIn 1s ease forwards;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.chat-container{
+display:flex;
+align-items:flex-start;
+margin-bottom:15px;
+gap:15px;
+}
+
+/* Avatar */
+
+.result-avatar{
+width:60px;
+height:60px;
+background:black;
+border-radius:50%;
+display:flex;
+justify-content:center;
+align-items:center;
+box-shadow:0 0 20px var(--glow-green),0 0 40px var(--glow-green);
+flex-shrink:0;
+animation:pulse 2s infinite;
+position:relative;
+}
+
+.result-avatar::after{
+content:"";
+width:35px;
+height:35px;
+background:var(--glow-green);
+clip-path:polygon(
+35% 0%,65% 0%,65% 35%,100% 35%,100% 65%,
+65% 65%,65% 100%,35% 100%,35% 65%,0% 65%,0% 35%,35% 35%);
+position:absolute;
+}
+
+@keyframes pulse{
+0%,100%{transform:scale(1);}
+50%{transform:scale(1.05);}
+}
+
+.chat-bubble{
+background:#111;
+padding:15px;
+border-radius:15px;
+max-width:80%;
+box-shadow:0 0 15px var(--glow-green);
+color:white;
+animation:fadeInBubble .8s ease forwards;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+@keyframes fadeInBubble{
+from{opacity:0;transform:translateX(-10px);}
+to{opacity:1;transform:translateX(0);}
+}
+
+.risk-box{
+display:inline-block;
+padding:6px 12px;
+border-radius:6px;
+color:black;
+font-weight:600;
+}
+
+.disclaimer{
+font-size:12px;
+margin-top:20px;
+color:#888;
+text-align:center;
+}
+
+.find-hospital-btn{
+background:var(--glow-green);
+color:black;
+padding:12px 20px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+margin-top:10px;
+transition:all .3s;
+}
+
+.find-hospital-btn:hover{
+background:#00cc00;
+color:white;
+}
+
+/* Falling crosses */
+
+#crossContainer{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+pointer-events:none;
+z-index:1;
+overflow:hidden;
+}
+
+.cross{
+position:absolute;
+top:-80px;
+width:40px;
+height:40px;
+background:var(--glow-green);
+clip-path:polygon(
+35% 0%,65% 0%,65% 35%,100% 35%,100% 65%,
+65% 65%,65% 100%,35% 100%,35% 65%,0% 65%,0% 35%,35% 35%);
+opacity:0;
+border-radius:4px;
+animation:fall linear infinite;
+}
+
+.cross:nth-child(odd){
+width:50px;
+height:50px;
+}
+
+.cross:nth-child(even){
+width:30px;
+height:30px;
+}
+
+@keyframes fall{
+0%{
+transform:translateY(-100px);
+opacity:0;
+}
+10%{
+opacity:.8;
+}
+100%{
+transform:translateY(110vh);
+opacity:0;
+}
+}
+
 </style>
 </head>
+
 <body>
 
 <div id="crossContainer">
-  <div class="cross"></div>
-  <div class="cross"></div>
-  <div class="cross"></div>
-  <div class="cross"></div>
-  <div class="cross"></div>
-  <div class="cross"></div>
-  <div class="cross"></div>
+<div class="cross" style="left:5%;animation-duration:9s;animation-delay:-2s;"></div>
+<div class="cross" style="left:20%;animation-duration:7s;animation-delay:-4s;"></div>
+<div class="cross" style="left:35%;animation-duration:11s;animation-delay:-3s;"></div>
+<div class="cross" style="left:50%;animation-duration:8s;animation-delay:-6s;"></div>
+<div class="cross" style="left:65%;animation-duration:10s;animation-delay:-5s;"></div>
+<div class="cross" style="left:80%;animation-duration:7s;animation-delay:-2s;"></div>
+<div class="cross" style="left:92%;animation-duration:9s;animation-delay:-7s;"></div>
 </div>
 
 <div class="container">
-  <div class="card">
-    <h1>AI-Powered Health Assistant Website</h1>
-    <form id="healthForm">
-      <label>Describe Symptoms</label>
-      <textarea id="symptoms" rows="3" required></textarea>
-      <label>Temperature (°C)</label>
-      <input type="number" id="temperature" min="30" max="45" step="0.1" required>
-      <label>Severity</label>
-      <select id="severity" required>
-        <option value="">Select</option>
-        <option value="mild">Mild</option>
-        <option value="moderate">Moderate</option>
-        <option value="severe">Severe</option>
-      </select>
-      <label>Duration (Days)</label>
-      <input type="number" id="days" min="0" max="30" required>
-      <button type="submit">Run Diagnosis</button>
-    </form>
 
-    <div id="dashboard" class="dashboard">
-      <div class="chat-container">
-        <div class="result-avatar"></div>
-        <div id="analysisContent" class="chat-bubble"></div>
-      </div>
-      <button id="findHospitalBtn" class="find-hospital-btn" style="display:none;">Find Nearest Hospitals</button>
-    </div>
+<div class="card">
 
-    <div class="disclaimer">
-      This system is for educational purposes only and does not replace professional medical advice.
-    </div>
-  </div>
+<h1>AI-Powered Health Assistant Website</h1>
+
+<form id="healthForm">
+
+<label>Describe Symptoms</label>
+<textarea id="symptoms" rows="3" required></textarea>
+
+<label>Temperature (°C)</label>
+<input type="number" id="temperature" min="30" max="45" step="0.1" required>
+
+<label>Severity</label>
+<select id="severity" required>
+<option value="">Select</option>
+<option value="mild">Mild</option>
+<option value="moderate">Moderate</option>
+<option value="severe">Severe</option>
+</select>
+
+<label>Duration (Days)</label>
+<input type="number" id="days" min="0" max="30" required>
+
+<button type="submit">Run Diagnosis</button>
+
+</form>
+
+<div id="dashboard" class="dashboard">
+
+<div class="chat-container">
+<div class="result-avatar"></div>
+<div id="analysisContent" class="chat-bubble"></div>
+</div>
+
+<button id="findHospitalBtn" class="find-hospital-btn" style="display:none;">
+Find Nearest Hospitals
+</button>
+
+</div>
+
+<div class="disclaimer">
+This system is for educational purposes only and does not replace professional medical advice.
+</div>
+
+</div>
 </div>
 
 <script>
-// Health analysis logic
+
 const form=document.getElementById("healthForm");
 const dashboard=document.getElementById("dashboard");
 const analysisContent=document.getElementById("analysisContent");
 const findHospitalBtn=document.getElementById("findHospitalBtn");
 
 function analyze(symptoms,temp,severity,days){
-  let score=0, detected=[], conditions=[], emergency=false;
-  let recommendations=[], medications=[];
-  const keywords=["cough","headache","nausea","vomiting","diarrhea","fatigue","chest pain","shortness of breath","fever","sore throat","dizziness"];
-  keywords.forEach(k=>{ if(symptoms.includes(k)){ detected.push(k); score++; }});
-  if(temp>=39) score+=3; else if(temp>=38) score+=2; else if(temp>=37.5) score+=1;
-  if(severity==="moderate") score+=2; if(severity==="severe") score+=3;
-  if(days>7) score+=3; else if(days>4) score+=2;
-  if(symptoms.includes("chest pain") || symptoms.includes("shortness of breath") || temp>=40){ score+=5; emergency=true; }
 
-  let riskPercent = Math.min(Math.round((score/20)*100),100);
+let score=0;
+let detected=[];
+let conditions=[];
+let emergency=false;
 
-  if(riskPercent<=30){ recommendations=["Rest 7–9 hrs","Hydrate well","Monitor symptoms","Avoid strenuous activity"]; medications=["Paracetamol","Ibuprofen","Cough lozenges"]; }
-  else if(riskPercent<=70){ recommendations=["See a doctor within 1–2 days","Monitor temperature twice daily","Increase hydration","Avoid school/work if worse"]; medications=["Paracetamol/Ibuprofen","Oral rehydration","OTC cold/flu meds"]; }
-  else { recommendations=["Immediate medical attention","Do not delay seeking help","Avoid self-medication"]; medications=["Consult doctor immediately"]; }
+let recommendations=[];
+let medications=[];
 
-  if(detected.includes("cough") && temp>=38) conditions.push("Respiratory Infection");
-  if(detected.includes("vomiting") || detected.includes("diarrhea")) conditions.push("Gastrointestinal Infection");
-  if(detected.includes("headache") && temp>=38) conditions.push("Viral Fever");
-  if(conditions.length===0) conditions.push("Mild Viral Illness");
+const keywords=[
+"cough","headache","nausea","vomiting","diarrhea",
+"fatigue","chest pain","shortness of breath",
+"fever","sore throat","dizziness"
+];
 
-  return {riskPercent, detected, conditions, recommendations, medications, emergency};
+keywords.forEach(k=>{
+if(symptoms.includes(k)){
+detected.push(k);
+score++;
+}
+});
+
+if(temp>=39)score+=3;
+else if(temp>=38)score+=2;
+else if(temp>=37.5)score+=1;
+
+if(severity==="moderate")score+=2;
+if(severity==="severe")score+=3;
+
+if(days>7)score+=3;
+else if(days>4)score+=2;
+
+if(symptoms.includes("chest pain")||symptoms.includes("shortness of breath")||temp>=40){
+score+=5;
+emergency=true;
+}
+
+let riskPercent=Math.min(Math.round((score/20)*100),100);
+
+let label='';
+let riskColor='';
+
+if(riskPercent<=33){
+label='Low';
+riskColor='var(--risk-low)';
+recommendations=[
+"Rest 7–9 hrs",
+"Hydrate well",
+"Monitor symptoms",
+"Avoid strenuous activity"
+];
+medications=[
+"Paracetamol",
+"Ibuprofen",
+"Cough lozenges"
+];
+}
+
+else if(riskPercent<=66){
+label='Moderate';
+riskColor='var(--risk-moderate)';
+recommendations=[
+"See a doctor within 1–2 days",
+"Monitor temperature twice daily",
+"Increase hydration",
+"Avoid school/work if worse"
+];
+medications=[
+"Paracetamol/Ibuprofen",
+"Oral rehydration",
+"OTC cold/flu meds"
+];
+}
+
+else{
+label='High';
+riskColor='var(--risk-high)';
+recommendations=[
+"Immediate medical attention",
+"Do not delay seeking help",
+"Avoid self-medication"
+];
+medications=[
+"Consult doctor immediately"
+];
+}
+
+if(detected.includes("cough") && temp>=38)
+conditions.push("Respiratory Infection");
+
+if(detected.includes("vomiting") || detected.includes("diarrhea"))
+conditions.push("Gastrointestinal Infection");
+
+if(detected.includes("headache") && temp>=38)
+conditions.push("Viral Fever");
+
+if(conditions.length===0)
+conditions.push("Mild Viral Illness");
+
+return{
+riskPercent,
+riskColor,
+label,
+detected,
+conditions,
+recommendations,
+medications,
+emergency
+};
 }
 
 function render(data){
-  dashboard.style.display="block";
-  analysisContent.innerHTML="";
-  findHospitalBtn.style.display="block";
-  const lines=[
-    `<strong>Risk:</strong> ${data.riskPercent}%`,
-    `<strong>Detected Symptoms:</strong> ${data.detected.length ? data.detected.join(", ") : "None"}`,
-    `<strong>Possible Conditions:</strong> ${data.conditions.join(", ")}`,
-    `<strong>Recommended Actions:</strong> ${data.recommendations.join(", ")}`,
-    `<strong>Suggested Medications:</strong> ${data.medications.join(", ")}`
-  ];
-  analysisContent.innerHTML = lines.map(l=>`<div>${l}</div>`).join("");
+
+dashboard.style.display="block";
+analysisContent.innerHTML="";
+findHospitalBtn.style.display="block";
+
+const riskHTML=`<span class="risk-box" style="background:${data.riskColor}">${data.label} ${data.riskPercent}%</span>`;
+
+const lines=[
+
+`<strong>Risk:</strong> ${riskHTML}`,
+
+`<strong>Detected Symptoms:</strong> ${
+data.detected.length?data.detected.join(", "):"None"
+}`,
+
+`<strong>Possible Conditions:</strong> ${data.conditions.join(", ")}`,
+
+`<strong>Recommended Actions:</strong> ${data.recommendations.join(", ")}`,
+
+`<strong>Suggested Medications:</strong> ${data.medications.join(", ")}`
+
+];
+
+analysisContent.innerHTML=lines.map(l=>`<div>${l}</div>`).join("");
+
 }
 
-form.addEventListener("submit", function(e){
-  e.preventDefault();
-  const symptoms=document.getElementById("symptoms").value.toLowerCase();
-  const temp=parseFloat(document.getElementById("temperature").value);
-  const severity=document.getElementById("severity").value;
-  const days=parseInt(document.getElementById("days").value);
-  const result=analyze(symptoms,temp,severity,days);
-  render(result);
+form.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+const symptoms=document.getElementById("symptoms").value.toLowerCase();
+const temp=parseFloat(document.getElementById("temperature").value);
+const severity=document.getElementById("severity").value;
+const days=parseInt(document.getElementById("days").value);
+
+const result=analyze(symptoms,temp,severity,days);
+
+render(result);
+
 });
 
 findHospitalBtn.addEventListener("click",()=>{
-  window.open("https://www.google.com/maps/search/nearest+hospital","_blank");
+window.open("https://www.google.com/maps/search/nearest+hospital","_blank");
 });
+
 </script>
 
 </body>
-</html>
+  </html>
